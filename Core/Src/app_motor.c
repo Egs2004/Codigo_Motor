@@ -25,7 +25,7 @@ void App_Motor_Run(void)
     switch(current_state)
     {
         case STATE_FORWARD:
-            Motor_SetSpeed(500); // 50% de velocidad adelante
+            Motor_SetSpeed(1000); // 100% de PWM adelante
             if (current_time - last_time >= 3000) // Despues de 3 segundos...
             {
                 current_state = STATE_PAUSE_1;
@@ -43,7 +43,7 @@ void App_Motor_Run(void)
             break;
 
         case STATE_BACKWARD:
-            Motor_SetSpeed(-500); // 50% de velocidad en reversa
+            Motor_SetSpeed(-500); // 50% de PWM en reversa
             if (current_time - last_time >= 3000)
             {
                 current_state = STATE_PAUSE_2;

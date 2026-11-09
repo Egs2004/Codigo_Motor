@@ -15,4 +15,13 @@ void Motor_Stop(void);
 // Devuelve el conteo crudo del encoder
 int32_t Motor_GetEncoderValue(void);
 
+// Devuelve la posición acumulada en cuentas
+int32_t Motor_GetEncoderPosition(void);
+
+// Reinicia la posición y el contador del encoder
+void Motor_ResetEncoder(void);
+
+// Devuelve la velocidad del encoder en revoluciones por minuto
+float Motor_GetEncoderRPM(void);
+
 #endif
