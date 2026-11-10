@@ -23,7 +23,6 @@
 /* USER CODE BEGIN Includes */
 #include "motor.h"
 #include "app_motor.h"
-#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,11 +45,6 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart2;
-
-/* USER CODE BEGIN PV */
-static uint32_t last_encoder_report;
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -100,9 +94,8 @@ int main(void)
   MX_TIM4_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-Motor_Init(&htim3, &htim4); // Inicializa hardware
-  App_Motor_Init();           // Inicializa la máquina de estados
-  last_encoder_report = HAL_GetTick();
+  Motor_Init(&htim3, &htim4); // Inicializa hardware
+  App_Motor_Init(&huart2, APP_MOTOR_DEFAULT_EXPERIMENT);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -112,36 +105,7 @@ Motor_Init(&htim3, &htim4); // Inicializa hardware
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    App_Motor_Run(); // Ejecuta la secuencia sin bloquear el CPU
-
-    if (HAL_GetTick() - last_encoder_report >= 10U)
-    {
-      const int32_t rpm_x100 = (int32_t)(Motor_GetEncoderRPM() * 100.0f);
-      const int32_t absolute_rpm_x100 =
-          (rpm_x100 < 0) ? -rpm_x100 : rpm_x100;
-      char report[64];
-      int length;
-
-      if (rpm_x100 < 0)
-      {
-        length = snprintf(report, sizeof(report),
-                          "RPM=-%ld.%02ld\r\n",
-                          (long)(absolute_rpm_x100 / 100),
-                          (long)(absolute_rpm_x100 % 100));
-      }
-      else
-      {
-        length = snprintf(report, sizeof(report),
-                          "RPM=%ld.%02ld\r\n",
-                          (long)(absolute_rpm_x100 / 100),
-                          (long)(absolute_rpm_x100 % 100));
-      }
-      if (length > 0 && length < (int)sizeof(report))
-      {
-        HAL_UART_Transmit(&huart2, (uint8_t *)report, (uint16_t)length, 50);
-      }
-      last_encoder_report = HAL_GetTick();
-    }
+    App_Motor_Run(); // Ejecuta el experimento y transmite CSV cada 10 ms
   }
   /* USER CODE END 3 */
 }
